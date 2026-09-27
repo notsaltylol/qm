@@ -30,6 +30,7 @@ const API_RESOURCES = new Set([
   "connectors",
   "contexts",
   "crons",
+  "tpm",
   "deliveries",
   "deployments",
   "directory",

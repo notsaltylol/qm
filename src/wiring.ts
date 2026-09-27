@@ -311,6 +311,10 @@ import type { Harness } from "./harness/harness.ts";
 import { createSecurityScreenProxy, type SecurityScreener } from "./security/security-screener.ts";
 import { createMemoryTaskStore } from "./tasks/memory-task-store.ts";
 import { createPostgresTaskStore } from "./tasks/postgres-task-store.ts";
+import { createMemoryTpmStore } from "./tpm/memory-tpm-store.ts";
+import { createPostgresTpmStore } from "./tpm/postgres-tpm-store.ts";
+import { createTpmService, type TpmService } from "./tpm/tpm-service.ts";
+import { createJevClient, type JevClient } from "./classify/jev-client.ts";
 import type { TaskStore } from "./tasks/task-store.ts";
 import { createMemoryStrategy } from "./memory/strategy.ts";
 import { createOrchestrator, egressClaimAllowingControlPlane, type OrchestratorDeps } from "./core/orchestrator.ts";
@@ -476,6 +480,7 @@ export interface BuiltApp {
   runs: RunStore;
   signals: RunSignalStore;
   tasks: TaskStore;
+  tpm: TpmService;
   sessionStateBus: SessionStateBus;
   ledgerEventBus: LedgerEventBus;
   surfaceCache: SurfaceCache;
@@ -562,6 +567,7 @@ export function buildApp(
     credentialBrokers?: Record<string, AwsRoleBroker>;
     modelCredentialFetch?: typeof fetch;
     modelVerificationProbe?: typeof probeModel;
+    jevClient?: JevClient;
   } = {},
 ): BuiltApp {
   let backgroundAdmission = () => !config.backgroundDeploymentId;
@@ -1272,6 +1278,13 @@ export function buildApp(
       ? createPostgresRunSignalStore(requireDbUrl("RUN_STORE"))
       : createMemoryRunSignalStore();
   const tasks = config.databaseUrl ? createPostgresTaskStore(config.databaseUrl) : createMemoryTaskStore();
+  const tpmStore = config.databaseUrl ? createPostgresTpmStore(config.databaseUrl) : createMemoryTpmStore();
+  const jevClient =
+    overrides.jevClient ??
+    (config.typesafeApiKey
+      ? createJevClient({ apiKey: config.typesafeApiKey, model: config.typesafeModel })
+      : undefined);
+  const tpm = createTpmService({ store: tpmStore, ...(jevClient ? { classifier: jevClient } : {}) });
   const writeModelRegistry = <T>(fn: () => Promise<T>): Promise<T> =>
     advisoryLock.withLock("model-registry", async () => {
       await refreshModels();
@@ -1932,6 +1945,7 @@ export function buildApp(
     runActivity,
     runs,
     tasks,
+    tpm,
     blobTransfer,
     livenessCache,
     deviceFlowCutover,
@@ -2727,6 +2741,7 @@ export function buildApp(
       void runStreamEvents.close?.();
       await harness.turns.close?.();
       await tasks.close?.();
+      await tpmStore.close?.();
       await flyTunnel?.stop();
     },
   };
@@ -2747,6 +2762,7 @@ export function buildApp(
     runs,
     signals: runSignals,
     tasks,
+    tpm,
     sessionStateBus,
     ledgerEventBus,
     surfaceCache,
@@ -2912,6 +2928,7 @@ export function serverDeps(
     errors: built.errors,
     metrics: built.metrics,
     crons: built.crons,
+    tpm: built.tpm,
     loops: built.loops,
     credentialServices: () => built.credentialTools.map((tool) => tool.service),
     deploymentLayer: built.deploymentLayerStore,

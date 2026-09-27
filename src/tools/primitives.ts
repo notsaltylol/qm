@@ -1,3 +1,4 @@
+import { bindTpmBoard, type TpmBoardAccess, type TpmService } from "../tpm/tpm-service.ts";
 import { MaskedExecutionError, executionSecretEnv, createExactSecretValueMasker } from "../security/secret-masking.ts";
 import { withAbort } from "../util/async.ts";
 import type { RuntimeRequest, RuntimeResult } from "../harness/runtime-types.ts";
@@ -199,6 +200,7 @@ export type AttachFiles = (files: readonly string[]) => Promise<AttachResult>;
 
 export interface ToolContext extends SurfaceToolDeps {
   runtime?(request: RuntimeRequest, signal?: AbortSignal): Promise<RuntimeResult>;
+  tpm?: TpmBoardAccess;
   attach: AttachFiles;
   sessionSyscalls?: SessionSyscalls;
   commandCredentialHandles?: readonly string[];
@@ -494,6 +496,7 @@ export interface ToolContextDeps {
   memory?: MemoryService;
   memoryScopeId?: ScopeId;
   memoryAccess?: { write?: ScopeId; read: ScopeId[] };
+  tpm?: TpmService;
   mcp?: McpToolService;
   sessionHistory?: {
     search(q: string, limit?: number): Promise<string[]>;
@@ -1211,6 +1214,10 @@ export function createToolContext(deps: ToolContextDeps): ToolContext {
         }),
       );
     },
+
+    ...(deps.tpm && deps.memoryAccess?.write
+      ? { tpm: bindTpmBoard(deps.tpm, deps.memoryAccess.write, deps.createdBy, (produce) => once(produce)) }
+      : {}),
 
     ...(deps.sessionSyscalls
       ? {

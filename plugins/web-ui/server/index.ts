@@ -2955,6 +2955,52 @@ const apiRoutes: readonly WebRoute[] = [
   },
   {
     method: "GET",
+    path: "/api/tpm/boards",
+    handle: async (c) => relayCore(c.res, "GET", `/v1/tpm/boards?principalId=${encodeURIComponent(c.user)}`),
+  },
+  {
+    method: "GET",
+    path: "/api/tpm/board",
+    handle: async (c) => {
+      const params = new URL(c.req.url ?? "/", "http://web").searchParams;
+      const query = new URLSearchParams({
+        principalId: c.user,
+        scope: params.get("scope") ?? "",
+        days: params.get("days") ?? "",
+      });
+      return relayCore(c.res, "GET", `/v1/tpm/board?${query.toString()}`);
+    },
+  },
+  {
+    method: "PATCH",
+    path: "/api/tpm/items/:id",
+    handle: async (c) => {
+      const body = await readJson<{ scope?: unknown; column?: unknown }>(c.req, c.res, false);
+      if (!body) return;
+      return relayCore(
+        c.res,
+        "PATCH",
+        `/v1/tpm/items/${encodeURIComponent(c.params.id!)}`,
+        JSON.stringify({ principalId: c.user, scope: body.scope, column: body.column }),
+      );
+    },
+  },
+  {
+    method: "POST",
+    path: "/api/tpm/edges/:id/decide",
+    handle: async (c) => {
+      const body = await readJson<{ scope?: unknown; accept?: unknown }>(c.req, c.res, false);
+      if (!body) return;
+      return relayCore(
+        c.res,
+        "POST",
+        `/v1/tpm/edges/${encodeURIComponent(c.params.id!)}/decide`,
+        JSON.stringify({ principalId: c.user, scope: body.scope, accept: body.accept }),
+      );
+    },
+  },
+  {
+    method: "GET",
     path: "/api/crons",
     handle: async (c) => {
       const { res, user } = c;

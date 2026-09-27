@@ -1,3 +1,4 @@
+import type { TpmService } from "../../tpm/tpm-service.ts";
 import type { ExternalSlackPolicies } from "../../resolution/external-slack.ts";
 import type { RuntimeService } from "../../harness/runtime-types.ts";
 import type { SandboxResources } from "../../sandbox/sandbox-resources.ts";
@@ -174,6 +175,7 @@ export interface OrchestratorDeps {
   runActivity?: RunActivityStore;
   runs?: RunStore;
   tasks?: TaskStore;
+  tpm?: TpmService;
   blobTransfer?: BlobTransferStore;
   processes?: ProcessRegistry;
   monitors?: MonitorStore;

@@ -2729,6 +2729,12 @@ export function createOrchestrator(deps: OrchestratorDeps): Orchestrator {
           memory: deps.memory,
           memoryScopeId,
           ...(memoryAccess ? { memoryAccess } : {}),
+          ...(!external &&
+          deps.tpm &&
+          memoryAccess?.write &&
+          (await deps.featureFlags?.enabled("tpm_board", memoryAccess.write)) === true
+            ? { tpm: deps.tpm }
+            : {}),
           ...(!external && deps.mcp ? { mcp: deps.mcp } : {}),
           ...(input.surface === "slack" ? { actingSlackUserId: actor.id } : {}),
           ...(deps.deploymentLayer

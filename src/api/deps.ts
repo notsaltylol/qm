@@ -1,3 +1,4 @@
+import type { TpmService } from "../tpm/tpm-service.ts";
 import type { ExternalSlackPolicies } from "../resolution/external-slack.ts";
 import type { DurableMap } from "../persistence/durable-map.ts";
 import type { BackgroundOwnershipStore } from "../runs/background-ownership.ts";
@@ -149,6 +150,7 @@ export interface ServerDeps {
   errors?: ErrorLog;
   metrics?: MetricsSink;
   crons?: CronStore;
+  tpm?: TpmService;
   loops?: LoopServiceDeps;
   runs?: RunStore;
   signals?: RunSignalStore;

@@ -1,5 +1,18 @@
 import { html, nothing, render, type TemplateResult } from "lit";
-import { Box, Brain, Clock, Files, Folder, KeyRound, Repeat, Rocket, ShieldUser, Webhook, type IconNode } from "lucide";
+import {
+  Box,
+  Brain,
+  Clock,
+  Files,
+  Folder,
+  KeyRound,
+  Repeat,
+  Rocket,
+  ShieldUser,
+  SquareKanban,
+  Webhook,
+  type IconNode,
+} from "lucide";
 import { deepLinkPath, isPlainLeftClick, UI_BASE } from "./deep-link";
 import { nextGridIndex } from "./grid-nav";
 import { setScopedSession } from "./session-scope";
@@ -33,6 +46,7 @@ export function destinations(): Destination[] {
     to("contexts", Folder, "Projects", "Group chats, files, and automations"),
     to("files", Files, "Files", "Everything you and QM have shared"),
     to("crons", Clock, "Crons", "Work that runs on a schedule"),
+    to("tpm", SquareKanban, "TPM board", "Tickets, customer issues, docs, and what blocks what"),
     to("webhooks", Webhook, "Webhooks", "Inbound events that wake QM"),
     to("keychain", KeyRound, "Keychain", "Connected accounts and credentials"),
     to("deploys", Rocket, "Apps", "What QM has shipped for you"),

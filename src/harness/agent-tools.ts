@@ -12,6 +12,7 @@ import type { ToolContext, PublishInput, PublishAudienceDescriptor } from "../to
 import type { GapWork } from "../sessions/session-store.ts";
 import { NeedsApproval, CommandDenied } from "../tools/primitives.ts";
 import { classifyScopeLabel } from "../classify/scope-classifier.ts";
+import { createTpmTool } from "../tpm/tpm-tool.ts";
 import type { McpToolDescriptor } from "../mcp/mcp-tool-service.ts";
 import { splitToScope } from "../api/artifact-share.ts";
 import { errMessage } from "../util/errors.ts";
@@ -317,6 +318,7 @@ function fmtCronRunLine(entry: CronFireLogEntry): string {
 
 export interface AgentToolsOptions {
   sessionTools?: boolean;
+  tpmTools?: boolean;
   commandCredentialHandles?: readonly string[];
   scratchExec?: boolean;
   ownerAuthExec?: boolean;
@@ -4201,6 +4203,19 @@ export function createAgentTools(ref: ToolContextRef, opts?: AgentToolsOptions):
       ...(controlTools ? { share: sharingTool("deploy"), move: sharingTool("deploy", true) } : {}),
     }),
     memory,
+    ...(opts?.tpmTools
+      ? [
+          createTpmTool({
+            board: () => ref.current?.tpm,
+            recordCall,
+            recordResult: (callId, summary, ret, isError) =>
+              recordResult(callId, summary, ret, isError, undefined, false, undefined, {
+                provenance: "external",
+                source: "TPM board",
+              }),
+          }),
+        ]
+      : []),
     history,
     ...(!opts?.sandboxResources && !delegateWork ? [background] : []),
     ...(opts?.sessionTools === false ? [] : [sessionTool]),
@@ -4258,12 +4273,12 @@ function withToolApprovalGate(
     async execute(callId: string, params: unknown) {
       const gate = ref.toolApprovalGate;
       const resourceAction =
-        ["sandbox", "files", "apps", "skills", "goal", "cron"].includes(tool.name) &&
+        ["sandbox", "files", "apps", "skills", "goal", "cron", "tpm"].includes(tool.name) &&
         isObj(params) &&
         typeof params.action === "string"
           ? params.action
           : undefined;
-      const approvalIdentity = ["sandbox", "files", "apps", "skills", "goal", "cron"].includes(tool.name)
+      const approvalIdentity = ["sandbox", "files", "apps", "skills", "goal", "cron", "tpm"].includes(tool.name)
         ? `${tool.name}:${resourceAction ?? "invalid"}`
         : tool.name;
       const commandLabel = resourceAction ? `${tool.name} ${resourceAction}` : tool.name;

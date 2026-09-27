@@ -19,6 +19,7 @@ const VIEW_TITLES: Record<View, string> = {
   calendar: "Calendar",
   contexts: "Projects",
   crons: "Crons",
+  tpm: "TPM board",
   loops: "Loops",
   webhooks: "Webhooks",
   files: "Files",

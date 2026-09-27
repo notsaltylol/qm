@@ -27,6 +27,7 @@ const VIEWS = [
   "contexts",
   "webhooks",
   "crons",
+  "tpm",
   "loops",
   "files",
   "keychain",

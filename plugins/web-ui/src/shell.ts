@@ -26,6 +26,7 @@ import {
   Search,
   Settings,
   ShieldUser,
+  SquareKanban,
   Webhook,
   type IconNode,
 } from "lucide";
@@ -81,6 +82,7 @@ import {
   startNewChat,
 } from "./sessions";
 import { openCronById, renderCronsPage, resetActiveCron, routeCronsHistory } from "./crons";
+import { renderTpmPage } from "./tpm";
 import { renderLoopsPage, resetActiveLoop } from "./loops";
 import { openWebhookById, renderWebhooksPage, resetActiveWebhook, routeWebhooksHistory } from "./webhooks";
 import { renderFiles } from "./files";
@@ -221,6 +223,7 @@ const ICON = {
   deploys: Rocket,
   webhooks: Webhook,
   crons: Clock,
+  tpm: SquareKanban,
   loops: Repeat,
   memory: Brain,
   skills: Box,
@@ -728,6 +731,9 @@ export function switchView(v: View): void {
     case "crons":
       void renderCronsPage();
       break;
+    case "tpm":
+      void renderTpmPage();
+      break;
     case "loops":
       void renderLoopsPage();
       break;
@@ -797,6 +803,9 @@ function refreshActiveView(v: View): void {
       break;
     case "crons":
       void renderCronsPage();
+      break;
+    case "tpm":
+      void renderTpmPage();
       break;
     case "loops":
       void renderLoopsPage();

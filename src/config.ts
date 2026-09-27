@@ -105,6 +105,8 @@ export interface Config {
   emailAuthDomain?: string;
   resendApiKey?: string;
   emailFrom?: string;
+  typesafeApiKey?: string;
+  typesafeModel: string;
   rateLimitPerWindow: number;
   rateLimitWindowMs: number;
   budgetUsdPerWindow?: number;
@@ -1510,6 +1512,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
       ? { emailAuthDomain: env.AUTH_ALLOWED_EMAIL_DOMAIN.trim().toLowerCase() }
       : {}),
     ...(env.RESEND_API_KEY?.trim() ? { resendApiKey: env.RESEND_API_KEY.trim() } : {}),
+    ...(env.TYPESAFE_API_KEY?.trim() ? { typesafeApiKey: env.TYPESAFE_API_KEY.trim() } : {}),
+    typesafeModel: env.TYPESAFE_MODEL?.trim() || "jev-latest",
     ...(env.AUTH_EMAIL_FROM?.trim() ? { emailFrom: env.AUTH_EMAIL_FROM.trim() } : {}),
     piCaptureRequests: boolEnvStrict("PI_CAPTURE_REQUESTS", env.PI_CAPTURE_REQUESTS) ?? true,
     piSystemCacheSplit: boolEnvStrict("PI_SYSTEM_CACHE_SPLIT", env.PI_SYSTEM_CACHE_SPLIT) ?? false,

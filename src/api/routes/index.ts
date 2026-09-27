@@ -1,3 +1,4 @@
+import { tpmRoutes } from "./tpm.ts";
 import { deploymentLiveSmokeRoutes } from "./deployment-live-smoke.ts";
 import { backgroundWorkRoutes } from "./background-work.ts";
 import { composioRoutes } from "./composio.ts";
@@ -102,6 +103,7 @@ export const apiRoutes: ReadonlyArray<Route<ApiCtx>> = [
   ...projectRoutes,
   ...contextPolicyRoutes,
   ...cronRoutes,
+  ...tpmRoutes,
   ...loopRoutes,
   ...reachRoutes,
   ...webhookRoutes,

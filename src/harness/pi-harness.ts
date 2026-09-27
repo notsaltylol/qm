@@ -1585,6 +1585,7 @@ export function createPiHarness(opts?: PiHarnessOptions): Harness {
     sessionTools = false,
     delegateWork = false,
     clientTools?: readonly ClientToolDeclaration[],
+    tpmTools = false,
   ): Promise<{ entry: TurnSession; compileMs: number }> {
     const compileStart = Date.now();
     let reconstructed: PiReplayMessage[] | null;
@@ -1639,6 +1640,7 @@ export function createPiHarness(opts?: PiHarnessOptions): Harness {
         customTools: createAgentTools(ref, {
           sessionTools,
           delegateWork,
+          tpmTools,
           scratchExec,
           ownerAuthExec,
           reachExec,
@@ -1823,6 +1825,7 @@ export function createPiHarness(opts?: PiHarnessOptions): Harness {
           Boolean(turn.tools.sessionSyscalls),
           turn.delegateWork,
           turn.clientTools,
+          Boolean(turn.tools.tpm),
         );
         try {
           const turnWallClockMs = turn.turnWallClockMs ?? defaultTurnWallClockMs;

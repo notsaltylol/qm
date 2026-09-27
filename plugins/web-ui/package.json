@@ -16,6 +16,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.server.json --noEmit && tsc -p tsconfig.test.json --noEmit"
   },
   "dependencies": {
+    "@dagrejs/dagre": "^3.1.1",
     "@date-fns/tz": "^1.5.0",
     "@earendil-works/pi-agent-core": "0.77.0",
     "@earendil-works/pi-ai": "0.77.0",
@@ -25,6 +26,7 @@
     "@sentry/node": "10.75.0",
     "@tanstack/ai": "0.54.0",
     "@tanstack/ai-client": "0.31.1",
+    "@xyflow/react": "^12.12.0",
     "date-fns": "^4.4.0",
     "dockview-core": "^7.0.4",
     "dompurify": "^3.4.13",
@@ -35,11 +37,16 @@
     "marked": "^18.0.5",
     "mermaid": "^12.0.0",
     "morphdom": "2.7.8",
-    "posthog-js": "1.433.10"
+    "posthog-js": "1.433.10",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "recharts": "^3.10.1"
   },
   "devDependencies": {
     "@types/jsdom": "^28.0.3",
     "@types/node": "^24.0.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "jsdom": "^29.1.1",
     "katex": "^0.16.47",
     "typescript": "^5.8.2",
