@@ -1,5 +1,7 @@
 # qm
 
+**Demo video:** https://www.loom.com/share/078f2ce1ff284471862ef933a5d9fa20
+
 A multiplayer agent harness for work. In Slack and on the web.
 
 ## Setup
